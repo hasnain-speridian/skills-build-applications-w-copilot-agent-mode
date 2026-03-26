@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 const apiBase = process.env.REACT_APP_CODESPACE_NAME
-  ? `https://${process.env.REACT_APP_CODESPACE_NAME}-8000.app.github.dev`
-  : 'http://localhost:8000';
+  ? `https://${process.env.REACT_APP_CODESPACE_NAME}`
+  : 'http://localhost';
 
 const activityColor = (activity) => {
   const map = { Running: 'success', Cycling: 'primary', Swimming: 'info', Hiking: 'warning', Yoga: 'secondary' };
@@ -15,7 +15,9 @@ function Activities() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const endpoint = `${apiBase}/api/activities/`;
+    const endpoint = process.env.REACT_APP_CODESPACE_NAME
+      ? `${apiBase}-8000.app.github.dev/api/activities/`
+      : `${apiBase}:8000/api/activities/`;
     console.log('Activities: fetching from', endpoint);
     fetch(endpoint)
       .then((res) => res.json())

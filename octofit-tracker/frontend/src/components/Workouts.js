@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 const apiBase = process.env.REACT_APP_CODESPACE_NAME
-  ? `https://${process.env.REACT_APP_CODESPACE_NAME}-8000.app.github.dev`
-  : 'http://localhost:8000';
+  ? `https://${process.env.REACT_APP_CODESPACE_NAME}`
+  : 'http://localhost';
 
 const levelVariant = (level) => {
   const map = { Beginner: 'success', Intermediate: 'warning', Advanced: 'danger', Expert: 'dark' };
@@ -15,7 +15,9 @@ function Workouts() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const endpoint = `${apiBase}/api/workouts/`;
+    const endpoint = process.env.REACT_APP_CODESPACE_NAME
+      ? `${apiBase}-8000.app.github.dev/api/workouts/`
+      : `${apiBase}:8000/api/workouts/`;
     console.log('Workouts: fetching from', endpoint);
     fetch(endpoint)
       .then((res) => res.json())

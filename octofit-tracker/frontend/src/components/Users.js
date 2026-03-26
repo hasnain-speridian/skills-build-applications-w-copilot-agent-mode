@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 const apiBase = process.env.REACT_APP_CODESPACE_NAME
-  ? `https://${process.env.REACT_APP_CODESPACE_NAME}-8000.app.github.dev`
-  : 'http://localhost:8000';
+  ? `https://${process.env.REACT_APP_CODESPACE_NAME}`
+  : 'http://localhost';
 
 function Users() {
   const [users, setUsers] = useState([]);
@@ -10,7 +10,9 @@ function Users() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const endpoint = `${apiBase}/api/users/`;
+    const endpoint = process.env.REACT_APP_CODESPACE_NAME
+      ? `${apiBase}-8000.app.github.dev/api/users/`
+      : `${apiBase}:8000/api/users/`;
     console.log('Users: fetching from', endpoint);
     fetch(endpoint)
       .then((res) => res.json())

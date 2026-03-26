@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 const apiBase = process.env.REACT_APP_CODESPACE_NAME
-  ? `https://${process.env.REACT_APP_CODESPACE_NAME}-8000.app.github.dev`
-  : 'http://localhost:8000';
+  ? `https://${process.env.REACT_APP_CODESPACE_NAME}`
+  : 'http://localhost';
 
 function Teams() {
   const [teams, setTeams] = useState([]);
@@ -10,7 +10,9 @@ function Teams() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const endpoint = `${apiBase}/api/teams/`;
+    const endpoint = process.env.REACT_APP_CODESPACE_NAME
+      ? `${apiBase}-8000.app.github.dev/api/teams/`
+      : `${apiBase}:8000/api/teams/`;
     console.log('Teams: fetching from', endpoint);
     fetch(endpoint)
       .then((res) => res.json())
