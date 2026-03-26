@@ -1,26 +1,18 @@
-from django.core.management.base import BaseCommand
-from django.contrib.auth import get_user_model
-from djongo import models
-from octofit_tracker import models as app_models
 
-from django.conf import settings
+from django.core.management.base import BaseCommand
+from octofit_tracker.models import User, Team, Activity, Leaderboard, Workout
 from pymongo import MongoClient
 
 class Command(BaseCommand):
     help = 'Populate the octofit_db database with test data'
 
     def handle(self, *args, **options):
-        # Connect to MongoDB directly for index creation
-        client = MongoClient('localhost', 27017)
-        db = client['octofit_db']
-        db.users.drop()
-        db.teams.drop()
-        db.activities.drop()
-        db.leaderboard.drop()
-        db.workouts.drop()
-
-        # Create unique index on email for users
-        db.users.create_index([('email', 1)], unique=True)
+        # Delete all data using Django ORM
+        User.objects.all().delete()
+        Team.objects.all().delete()
+        Activity.objects.all().delete()
+        Leaderboard.objects.all().delete()
+        Workout.objects.all().delete()
 
         # Sample data
         users = [
@@ -48,10 +40,21 @@ class Command(BaseCommand):
             {"name": "Cardio Blast", "level": "Beginner"},
         ]
 
-        db.users.insert_many(users)
-        db.teams.insert_many(teams)
-        db.activities.insert_many(activities)
-        db.leaderboard.insert_many(leaderboard)
-        db.workouts.insert_many(workouts)
+        # Insert data using Django ORM
+        for user in users:
+            User.objects.create(**user)
+        for team in teams:
+            Team.objects.create(**team)
+        for activity in activities:
+            Activity.objects.create(**activity)
+        for entry in leaderboard:
+            Leaderboard.objects.create(**entry)
+        for workout in workouts:
+            Workout.objects.create(**workout)
+
+        # Ensure unique index on email for users (MongoDB direct)
+        client = MongoClient('localhost', 27017)
+        db = client['octofit_db']
+        db.users.create_index([('email', 1)], unique=True)
 
         self.stdout.write(self.style.SUCCESS('octofit_db database populated with test data.'))
